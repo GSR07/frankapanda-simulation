@@ -22,8 +22,13 @@ install(PROGRAMS
     ${EXAMPLES_DIR}/ex_orientation_path_constraint.py
     ${EXAMPLES_DIR}/ex_pose_goal.py
     ${EXAMPLES_DIR}/ex_servo.py
-    ${EXAMPLES_DIR}/pick_and_place.py
     DESTINATION lib/${PROJECT_NAME}
+)
+
+install(PROGRAMS
+  ${EXAMPLES_DIR}/pick_and_place.py
+  DESTINATION lib/${PROJECT_NAME}
+  RENAME pick_and_place
 )
 
 # Setup the project

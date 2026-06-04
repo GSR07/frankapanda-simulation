@@ -3,7 +3,7 @@
   <name>pymoveit2</name>
   <version>4.0.0</version>
   <description>Basic Python interface for MoveIt 2 built on top of ROS 2 actions and services</description>
-  <maintainer email="gsr07@gmail.com">gsr07</maintainer>
+  <maintainer email="ganeshreddy30102000@gmail.com">gsr07</maintainer>
   <author>gsr07</author>
   <license>BSD</license>
 

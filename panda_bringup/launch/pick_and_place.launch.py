@@ -58,7 +58,7 @@ def generate_launch_description():
         name="pick_and_place",
         output="screen",
         parameters=[
-            {"target_color": "B"}  # {"target_color": "R"}, {"target_color": "G"}
+            {"target_color": "B"}
         ]
     )
 

@@ -121,8 +121,8 @@ class PickAndPlace(Node):
                 self.gripper.wait_until_executed()
 
                 # 6. Lift up back to pick_position
-                # self.moveit2.move_to_pose(position=pick_position, quat_xyzw=quat_xyzw)
-                # self.moveit2.wait_until_executed()
+                self.moveit2.move_to_pose(position=pick_position, quat_xyzw=quat_xyzw)
+                self.moveit2.wait_until_executed()
 
                 # 7. Move to home joint configuration
                 self.moveit2.move_to_configuration(self.home_joints)
