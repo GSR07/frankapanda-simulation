@@ -1,12 +1,24 @@
 import os
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription
+from launch.actions import (
+    DeclareLaunchArgument,
+    IncludeLaunchDescription,
+    TimerAction,
+)
+from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 from ament_index_python.packages import get_package_share_directory
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 
 def generate_launch_description():
+    target_color = LaunchConfiguration("target_color")
+
+    target_color_arg = DeclareLaunchArgument(
+        "target_color",
+        default_value="B",
+        description="Color to pick: R, G, or B",
+    )
 
     # ------------------- Gazebo -------------------
     gazebo = IncludeLaunchDescription(
@@ -48,7 +60,8 @@ def generate_launch_description():
         package="panda_vision",
         executable="color_detector",
         name="color_detector",
-        output="screen"
+        output="screen",
+        parameters=[{"use_sim_time": True}],
     )
 
     # ------------------- MoveIt Color Picker Node -------------------
@@ -58,14 +71,16 @@ def generate_launch_description():
         name="pick_and_place",
         output="screen",
         parameters=[
-            {"target_color": "B"}
-        ]
+            {"target_color": target_color},
+            {"use_sim_time": True},
+        ],
     )
 
     return LaunchDescription([
+        target_color_arg,
         gazebo,
         controller,
         moveit,
         vision_node,
-        color_picker_node,
+        TimerAction(period=10.0, actions=[color_picker_node]),
     ])

@@ -33,6 +33,6 @@ def generate_launch_description():
         [
             controller,
             joint_state_publisher_gui_node,
-            slider_control_node
+            slider_control_node,
         ]
     )

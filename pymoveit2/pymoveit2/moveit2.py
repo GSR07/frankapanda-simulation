@@ -1,6 +1,7 @@
 import copy
 import threading
 from enum import Enum
+from time import sleep
 from typing import Any, List, Optional, Tuple, Union
 
 import numpy as np
@@ -302,6 +303,12 @@ class MoveIt2:
         )
 
     #### Execution Polling Functions
+    def _process_callbacks(self, timeout_sec: float = 1.0):
+        if self._node.executor is None:
+            rclpy.spin_once(self._node, timeout_sec=timeout_sec)
+        else:
+            sleep(min(timeout_sec, 0.01))
+
     def query_state(self) -> MoveIt2State:
         with self.__execution_mutex:
             if self.__is_motion_requested:
@@ -524,7 +531,7 @@ class MoveIt2:
             return None
 
         while not future.done():
-            rclpy.spin_once(self._node, timeout_sec=1.0)
+            self._process_callbacks()
 
         return self.get_trajectory(
             future,
@@ -630,14 +637,14 @@ class MoveIt2:
                 weight=weight_joint_position,
             )
         # Define starting state for the plan (default to the current state)
-        while start_joint_state is None:
-            self._node._logger.warn(message="Joint states are not available yet!")
-            if self.__joint_state is not None:
-                start_joint_state = self.__joint_state
-                break
-            else:
-                rclpy.spin_once(self._node, timeout_sec=1.0)
-        self._node._logger.info(message="Joint states are available now")
+        joint_state_wait_attempts = 0
+        while start_joint_state is None and self.joint_state is None:
+            self._process_callbacks()
+            joint_state_wait_attempts += 1
+            if self.joint_state is None and joint_state_wait_attempts % 5 == 0:
+                self._node.get_logger().warn("Joint states are not available yet!")
+        if start_joint_state is None:
+            start_joint_state = self.joint_state
 
         # Ensure the request actually uses the intended start state
         if start_joint_state is not None:
@@ -762,7 +769,7 @@ class MoveIt2:
             return False
 
         while self.__is_motion_requested or self.__is_executing:
-            rclpy.spin_once(self._node, timeout_sec=1.0)
+            self._process_callbacks()
 
         return self.motion_suceeded
 
@@ -1204,7 +1211,7 @@ class MoveIt2:
             return None
 
         while not future.done():
-            rclpy.spin_once(self._node, timeout_sec=1.0)
+            self._process_callbacks()
 
         return self.get_compute_fk_result(future, fk_link_names=fk_link_names)
 
@@ -1297,7 +1304,7 @@ class MoveIt2:
             return None
 
         while not future.done():
-            rclpy.spin_once(self._node, timeout_sec=1.0)
+            self._process_callbacks()
 
         return self.get_compute_ik_result(future)
 

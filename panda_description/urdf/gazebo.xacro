@@ -5,20 +5,9 @@
 
   <ros2_control name="RobotSystem" type="system">
     
-    <!-- ros2_control Gazebo -->
-    <!-- ROS 2 Humble -->
-    <xacro:if value="$(arg is_ignition)">
-      <hardware>
-        <plugin>ign_ros2_control/IgnitionSystem</plugin>
-      </hardware>
-    </xacro:if>
-    
-    <!-- ROS 2 Iron or above -->
-    <xacro:unless value="$(arg is_ignition)">
-      <hardware>
-        <plugin>gz_ros2_control/GazeboSimSystem</plugin>
-      </hardware>
-    </xacro:unless>
+    <hardware>
+      <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+    </hardware>
 
     <!-- Joint 1 -->
     <joint name="panda_joint1">
@@ -53,7 +42,9 @@
         <param name="min">-3.1416</param>
         <param name="max">0.0</param>
       </command_interface>
-      <state_interface name="position"/>
+      <state_interface name="position">
+        <param name="initial_value">-0.1</param>
+      </state_interface>
     </joint>
 
     <!-- Joint 5 -->

@@ -5,7 +5,6 @@ from launch_ros.actions import Node
 from launch.actions import DeclareLaunchArgument
 from launch.substitutions import LaunchConfiguration
 from ament_index_python.packages import get_package_share_directory
-from launch.substitutions import PathJoinSubstitution, Command, FindExecutable
 
 
 def generate_launch_description():
@@ -50,7 +49,8 @@ def generate_launch_description():
         parameters=[
             moveit_config.to_dict(),
             {"use_sim_time": is_sim},
-            {"publish_robot_description_semantic": True}
+            {"publish_robot_description_semantic": True},
+            {"trajectory_execution.allowed_start_tolerance": 0.1},
         ],
         arguments=["--ros-args", "--log-level", "info"],
     )
@@ -73,6 +73,7 @@ def generate_launch_description():
             moveit_config.robot_description_semantic,
             moveit_config.robot_description_kinematics,
             moveit_config.joint_limits,
+            {"use_sim_time": is_sim},
         ],
     )
 

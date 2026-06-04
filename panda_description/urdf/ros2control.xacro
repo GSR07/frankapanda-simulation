@@ -3,22 +3,52 @@
 
   <!-- ROS 2 Control -->
 
-  <!-- ROS 2 Humble -->
   <gazebo>
+    <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+      <parameters>$(find panda_controller)/config/controllers.yaml</parameters>
+    </plugin>
+
+    <!--
+      SDFormat collapses the fixed panda_hand joint into panda_link7, so
+      detachable joints must use panda_link7 as the parent link entity.
+    -->
+    <plugin filename="ignition-gazebo-detachable-joint-system"
+            name="ignition::gazebo::systems::DetachableJoint">
+      <parent_link>panda_link7</parent_link>
+      <child_model>red_box</child_model>
+      <child_link>red_link</child_link>
+      <detach_topic>/panda_pick/red/detach</detach_topic>
+      <attach_topic>/panda_pick/red/attach</attach_topic>
+      <output_topic>/panda_pick/red/state</output_topic>
+    </plugin>
+    <plugin filename="ignition-gazebo-detachable-joint-system"
+            name="ignition::gazebo::systems::DetachableJoint">
+      <parent_link>panda_link7</parent_link>
+      <child_model>green_box</child_model>
+      <child_link>green_link</child_link>
+      <detach_topic>/panda_pick/green/detach</detach_topic>
+      <attach_topic>/panda_pick/green/attach</attach_topic>
+      <output_topic>/panda_pick/green/state</output_topic>
+    </plugin>
+    <plugin filename="ignition-gazebo-detachable-joint-system"
+            name="ignition::gazebo::systems::DetachableJoint">
+      <parent_link>panda_link7</parent_link>
+      <child_model>blue_box</child_model>
+      <child_link>blue_link</child_link>
+      <detach_topic>/panda_pick/blue/detach</detach_topic>
+      <attach_topic>/panda_pick/blue/attach</attach_topic>
+      <output_topic>/panda_pick/blue/state</output_topic>
+    </plugin>
+
+    <!-- ROS 2 Humble / Ignition Gazebo -->
     <xacro:if value="$(arg is_ignition)">
-      <plugin filename="ign_ros2_control-system" name="ign_ros2_control::IgnitionROS2ControlPlugin">
-        <parameters>$(find panda_controller)/config/controllers.yaml</parameters>
-      </plugin>
       <plugin filename="ignition-gazebo-sensors-system" name="ignition::gazebo::systems::Sensors">
         <render_engine>ogre2</render_engine>
       </plugin>
     </xacro:if>
 
-    <!-- ROS 2 Iron or above -->
+    <!-- ROS 2 Iron or newer / Gazebo -->
     <xacro:unless value="$(arg is_ignition)">
-      <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
-        <parameters>$(find panda_controller)/config/controllers.yaml</parameters>
-      </plugin>
       <plugin filename="gz-sim-sensors-system" name="gz::sim::systems::Sensors">
         <render_engine>ogre2</render_engine>
       </plugin>
